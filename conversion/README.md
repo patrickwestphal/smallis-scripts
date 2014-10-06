@@ -1,1 +1,1 @@
-Conversion script for the file `MGI_PhenotypicAllele.rpt` which can be found [here](ftp://ftp.informatics.jax.org/pub/reports/MGI_PhenotypicAllele.rpt). A conversion example can be downloaded [here](http://pwestphal.aksw.org/smallis/).
+Conversion script for the file `MGI_PhenotypicAllele.rpt` which can be found at ftp://ftp.informatics.jax.org/pub/reports/MGI_PhenotypicAllele.rpt . A conversion example can be downloaded [here](http://pwestphal.aksw.org/smallis/).
