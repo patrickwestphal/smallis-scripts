@@ -23,38 +23,7 @@ import mgi_gene_pheno_conf as conf
 
 ID_COUNTER = 0
 
-def get_positive_examples_and_info():
-    """structure of the MGI_GenePheno.rpt file (positive examples) "Genotypes
-    and Mammalian Phenotype Annotations for Marker Type Genes excluding
-    conditional mutations"
-
-    #0 Allelic Composition (e.g. Rb1<tm1Tyj>/Rb1<tm1Tyj>)
-    #1 Allele Symbol(s) (e.g. Rb1<tm1Tyj>)
-    #2 Allele ID(s) (e.g. MGI:1857242)
-    #3 Genetic Background (e.g. "involves: 129S2/SvPas")
-    #4 Mammalian Phenotype ID (e.g. MP:0000600)
-    #5 PubMed ID (e.g. 12529408)
-    #6 MGI Marker Accession ID (comma-delimited) (e.g. MGI:97874)
-    #7 empty column
-    #8 MGI Genotype Accession ID (comma-delimited) (e.g. MGI:2166359)
-    """
-    example_info = set()
-    examples = []
-
-    with open(conf.positive_examples_file_path) as f:
-        csv_reader = csv.reader(f, delimiter=conf.positive_exmaples_csv_delimiter)
-
-        for fields in csv_reader:
-            examples.append(fields)
-
-            if fields[4] == conf.positive_exmaples_pheno_id:
-                # add allelic composition/background strain pair to sample info
-                example_info.add((fields[conf.csv_col_pos_allelic_composition],
-                                  fields[conf.csv_col_pos_background_strain]))
-
-    return examples, example_info
-
-def _allelic_info_uri(example):
+def _allelic_info_uri():
     global ID_COUNTER
     ID_COUNTER += 1
     return conf.prefix_allelic_info_resource + '%05i' % ID_COUNTER
@@ -84,19 +53,85 @@ def _add_class_link(graph, subject, cls):
 def _add_example_class(graph, subject):
     graph.add((subject, RDF.type, URIRef(conf.uri_example_class)))
 
+def get_positive_examples_and_info():
+    """structure of the MGI_GenePheno.rpt file (positive examples) "Genotypes
+    and Mammalian Phenotype Annotations for Marker Type Genes excluding
+    conditional mutations"
+
+    #0 Allelic Composition (e.g. Rb1<tm1Tyj>/Rb1<tm1Tyj>)
+    #1 Allele Symbol(s) (e.g. Rb1<tm1Tyj>)
+    #2 Allele ID(s) (e.g. MGI:1857242)
+    #3 Genetic Background (e.g. "involves: 129S2/SvPas")
+    #4 Mammalian Phenotype ID (e.g. MP:0000600)
+    #5 PubMed ID (e.g. 12529408)
+    #6 MGI Marker Accession ID (comma-delimited) (e.g. MGI:97874)
+    #7 empty column
+    #8 MGI Genotype Accession ID (comma-delimited) (e.g. MGI:2166359)
+    """
+    example_info = set()
+    examples = []
+
+    with open(conf.positive_examples_file_path) as f:
+        csv_reader = csv.reader(f, delimiter=conf.csv_pos_delimiter)
+
+        for fields in csv_reader:
+            examples.append(fields)
+
+            if fields[4] == conf.positive_examples_pheno_id:
+                # add allelic composition/background strain pair to sample info
+                example_info.add((fields[conf.csv_pos_col_allelic_composition],
+                                  fields[conf.csv_pos_col_background_strain]))
+
+    return examples, example_info
+
 def build_pos_rdf(examples, example_info):
     g = Graph()
 
     for example in examples:
         # create allelic comp/background strain info
-        ai_bs_info = (example[conf.csv_col_pos_allelic_composition],
-                      example[conf.csv_col_pos_background_strain])
+        ai_bs_info = (example[conf.csv_pos_col_allelic_composition],
+                      example[conf.csv_pos_col_background_strain])
         if ai_bs_info in example_info:
-            s = URIRef(_allelic_info_uri(example))
+            s = URIRef(_allelic_info_uri())
 
-            cls = URIRef(_id2cls(example[conf.csv_col_pos_mp_id]))
+            cls = URIRef(_id2cls(example[conf.csv_pos_col_mp_id]))
             _add_class_link(g, s, cls)
             _add_allelic_info_literals(g, s, ai_bs_info)
+            _add_example_class(g, s)
+
+    return g
+
+def build_neg_rdf():
+    """structure of Excel file with negative examples
+    #0 genotype_ID (e.g. MGI:3611773)
+    #1 MP_ID (e.g. MP:0005375)
+    #2 MP_termname (e.g. adipose tissue phenotype)
+    #3 ref (reference to publication considering the genotype, e.g. J:103363)
+    #4 short_cit (short bibliographic info of the referenced publication)
+    #5 note1 (might be empty; e.g. “[Normal] young mice exhibit normal muscle strength”)
+    #6 note2 (similar to note1, but less often used)
+    #7 note3 (similar to note1, but less often used)
+    #8 note4 (similar to note1, but less often used)
+    #9 note5 (similar to note1, but less often used)
+    #10 note6 (similar to note1, but less often used)
+
+    --> only #1 of interest!!!
+    """
+    g = Graph()
+
+    with open(conf.negative_examples_file_path) as f:
+        csv_reader = csv.reader(f, delimiter=conf.csv_neg_delimiter)
+
+        if conf.csv_neg_header_line:
+            next(csv_reader)
+
+        for fields in csv_reader:
+            mp_id = fields[conf.csv_neg_col_mp_id]
+
+            s = URIRef(_allelic_info_uri())
+
+            cls = URIRef(_id2cls(mp_id))
+            _add_class_link(g, s, cls)
             _add_example_class(g, s)
 
     return g
@@ -112,9 +147,12 @@ def run():
     with open(conf.positive_examples_rdf_file_path, 'wb') as f:
         f.write(g_pos.serialize(format='turtle'))
 
-    # read negative example data
-    # convert negative example data to RDF
-    pass
+    # read negative example data and convert it to RDF
+    g_neg = build_neg_rdf()
+
+    # write results to file
+    with open(conf.negative_examples_rdf_file_path, 'wb') as f:
+        f.write(g_neg.serialize(format='turtle'))
 
 if __name__ == '__main__':
     run()
