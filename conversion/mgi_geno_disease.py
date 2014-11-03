@@ -30,9 +30,8 @@ def get_examples_and_info(examples_file_path, csv_delimiter):
 
             if fields[-1] == conf.diabetes_id:
                 # add allelic composition/background strain pair to sample info
-                example_info.add(
-                    (fields[conf.csv_col_pos_allelic_composition],
-                     fields[conf.csv_col_pos_background_strain]))
+                example_info.add((fields[conf.csv_col_allelic_composition],
+                                  fields[conf.csv_col_background_strain]))
 
     return examples, example_info
 
@@ -71,12 +70,12 @@ def build_rdf(examples, example_info):
 
     for example in examples:
         # create allelic comp/background strain info
-        ai_bs_info = (example[conf.csv_col_pos_allelic_composition],
-                      example[conf.csv_col_pos_background_strain])
+        ai_bs_info = (example[conf.csv_col_allelic_composition],
+                      example[conf.csv_col_background_strain])
         if ai_bs_info in example_info:
             s = URIRef(_allelic_info_uri(example))
 
-            cls = URIRef(_id2cls(example[conf.csv_col_pos_class_id]))
+            cls = URIRef(_id2cls(example[conf.csv_col_class_id]))
             _add_class_link(g, s, cls)
             _add_allelic_info_literals(g, s, ai_bs_info)
             _add_example_class(g, s)

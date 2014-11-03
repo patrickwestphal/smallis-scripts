@@ -17,8 +17,8 @@ uri_background_strain = 'http://dl-learner.org/smallis/background_strain'
 uri_example_class = 'http://dl-learner.org/smallis/Allelic_info'
 
 # CSV column positions start with 0!!!
-csv_col_pos_allelic_composition = 0
-csv_col_pos_background_strain = 3
-csv_col_pos_class_id = 4
+csv_col_allelic_composition = 0
+csv_col_background_strain = 3
+csv_col_class_id = 4
 
 csv_delimiter = '\t'
