@@ -10,4 +10,9 @@ This directory contains scripts for the following conversion tasks
 
 ### MGI Gene Pheno
 
-Conversion script for the file `MGI_PhenotypicAllele.rpt` which can be found at ftp://ftp.informatics.jax.org/pub/reports/MGI_PhenotypicAllele.rpt . A conversion example can be downloaded [here](http://pwestphal.aksw.org/smallis/).
+- converts files containing gento- and phenotypic information of positive/negative mouse examples for insulitis
+- files can be found here:
+
+  - MGI_GenePheno.rpt (ftp://ftp.informatics.jax.org/pub/reports/MGI_GenePheno.rpt)
+  - Normal_MPannot_V2.csv (not officially distributed)
+
