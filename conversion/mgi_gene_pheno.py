@@ -41,11 +41,10 @@ def _add_allelic_info_literals(graph, subject, allelic_info):
 
 def _add_class_link(graph, subject, cls):
     # add s rdf:type has-phenotype some MP:9876543
-    bCls = BNode()
     bRestriction = BNode()
 
-    graph.add((subject, RDF.type, bCls))
-    graph.add((bCls, OWL.equivalentClass, bRestriction))
+    graph.add((subject, RDF.type, OWL.NamedIndividual))
+    graph.add((subject, RDF.type, bRestriction))
     graph.add((bRestriction, RDF.type, OWL.Restriction))
     graph.add((bRestriction, OWL.onProperty, URIRef(conf.uri_has_phenotype)))
     graph.add((bRestriction, OWL.someValuesFrom, cls))
