@@ -5,7 +5,7 @@ import csv
 from rdflib import Graph, URIRef, Literal, BNode
 from rdflib import RDF, OWL
 
-import mgi_geno_disease_conf as conf
+from mouse_diabetes.exp01 import mgi_geno_disease_conf as conf
 
 ID_COUNTER = 0
 
