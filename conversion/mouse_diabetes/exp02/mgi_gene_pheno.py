@@ -6,7 +6,7 @@ from rdflib import Graph, BNode, Literal
 from rdflib import URIRef
 from rdflib import RDF, OWL
 
-import mgi_gene_pheno_conf as conf
+from . import mgi_gene_pheno_conf as conf
 
 # - download ftp.informatics.jax.org/pub/reports/MGI_GenePheno.rpt 
 # - extract all 1st and 4th column values (allelic composition plus background
@@ -93,7 +93,9 @@ def build_pos_rdf(examples, example_info):
         if ai_bs_info in example_info:
             s = URIRef(_allelic_info_uri())
 
+            print(example)
             cls = URIRef(_id2cls(example[conf.csv_pos_col_mp_id]))
+            print(example[conf.csv_pos_col_mp_id])
             _add_class_link(g, s, cls)
             _add_allelic_info_literals(g, s, ai_bs_info)
             _add_example_class(g, s)

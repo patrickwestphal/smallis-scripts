@@ -3,6 +3,7 @@ positive_examples_rdf_file_path = 'data/mgi_gene_pheno_pos.ttl'
 
 positive_examples_pheno_id = 'MP:0004031'
 negative_examples_file_path = 'data/Normal_MPannot_V2.csv'
+negative_examples_file_path = '/mnt/tmp/mouse_diabetes/data/experiment2/5379_5387.csv'
 
 negative_examples_rdf_file_path = 'data/mgi_gene_pheno_neg.ttl'
 
